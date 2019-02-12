@@ -21,7 +21,7 @@ extern "C" {
 
 // TODO: look into just keeping the stuff from GL header in here, this thing
 // isn't included on many systems and is kind of annoying to always need.
-#include <GL/glcorearb.h>
+#include <GL/glew.h>
 #include <math.h>
 #include <stdarg.h>
 #include <string.h>
@@ -296,6 +296,38 @@ static tfx_glext available_exts[] = {
 	{ NULL, false }
 };
 
+typedef const GLubyte* (GLAPIENTRY * PFNGLGETSTRINGPROC) (GLenum name);
+typedef GLenum (GLAPIENTRY * PFNGLGETERRORPROC) (void);
+typedef void (GLAPIENTRY* PFNGLBLENDFUNCPROC)(GLenum sfactor, GLenum dfactor);
+typedef void (GLAPIENTRY* PFNGLCOLORMASKPROC)(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+typedef void (GLAPIENTRY* PFNGLGETINTEGERVPROC)(GLenum pname, GLint *params);
+typedef void (GLAPIENTRY* PFNGLGETFLOATVPROC)(GLenum pname, GLfloat *params);
+typedef void (GLAPIENTRY* PFNGLDELETETEXTURESPROC)(GLsizei n, const GLuint *textures);
+typedef void (GLAPIENTRY* PFNGLGENTEXTURESPROC)(GLsizei n, GLuint *textures);
+typedef void (GLAPIENTRY* PFNGLBINDTEXTUREPROC)(GLenum target, GLuint texture);
+typedef void (GLAPIENTRY* PFNGLTEXPARAMETERIPROC)(GLenum target, GLenum pname, GLint param);
+typedef void (GLAPIENTRY* PFNGLTEXPARAMETERIVPROC)(GLenum target, GLenum pname, const GLint *params);
+typedef void (GLAPIENTRY* PFNGLTEXPARAMETERFPROC)(GLenum target, GLenum pname, GLfloat param);
+typedef void (GLAPIENTRY* PFNGLPIXELSTOREIPROC)(GLenum pname, GLint param);
+typedef void (GLAPIENTRY* PFNGLTEXIMAGE2DPROC)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels);
+typedef void (GLAPIENTRY* PFNGLTEXSUBIMAGE2DPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pixels);
+typedef void (GLAPIENTRY* PFNGLREADBUFFERPROC)(GLenum mode);
+typedef void (GLAPIENTRY* PFNGLVIEWPORTPROC)(GLint x, GLint y, GLsizei width, GLsizei height);
+//typedef void (GLAPIENTRY* glScissor)(GLint x, GLint y, GLsizei width, GLsizei height);
+typedef void (GLAPIENTRY* PFNGLENABLEPROC)(GLenum cap);
+typedef void (GLAPIENTRY* PFNGLDEPTHFUNCPROC)(GLenum func);
+typedef void (GLAPIENTRY* PFNGLFRONTFACEPROC)(GLenum mode);
+typedef void (GLAPIENTRY* PFNGLDRAWELEMENTSPROC)(GLenum mode, GLsizei count, GLenum type, const void *indices);
+typedef void (GLAPIENTRY* PFNGLDRAWARRAYSPROC)(GLenum mode, GLint first, GLsizei count);
+
+typedef void (GLAPIENTRY* PFNGLSCISSORPROC)(GLint x, GLint y, GLsizei width, GLsizei height);
+typedef void (GLAPIENTRY* PFNGLCLEARCOLORPROC)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+
+typedef void (GLAPIENTRY* PFNGLCLEARPROC)(GLbitfield mask);
+typedef void (GLAPIENTRY* PFNGLDISABLEPROC)(GLenum cap);
+typedef void (GLAPIENTRY* PFNGLDEPTHMASKPROC)(GLboolean flag);
+
+
 PFNGLGETSTRINGPROC tfx_glGetString;
 PFNGLGETSTRINGIPROC tfx_glGetStringi;
 PFNGLGETERRORPROC tfx_glGetError;
@@ -539,8 +571,8 @@ tfx_caps tfx_get_caps() {
 		for (int i = 0; i < ext_count; i++) {
 			const char *search = (const char*)CHECK(tfx_glGetStringi(GL_EXTENSIONS, i));
 #if defined(_MSC_VER) && 0
-			OutputDebugString(search);
-			OutputDebugString("\n");
+			//OutputDebugString(search);
+			//OutputDebugString("\n");
 #endif
 			for (int j = 0;; j++) {
 				tfx_glext *tmp = &available_exts[j];
@@ -852,8 +884,8 @@ static tfx_caps g_caps;
 // fallback printf
 static void basic_log(const char *msg, tfx_severity level) {
 #ifdef _MSC_VER
-	OutputDebugString(msg);
-	OutputDebugString("\n");
+	//OutputDebugString(msg);
+	//OutputDebugString("\n");
 #else
 	printf("%s\n", msg);
 #endif
@@ -979,9 +1011,9 @@ void tfx_reset(uint16_t width, uint16_t height, tfx_reset_flags flags) {
 	// update every already loaded texture's anisotropy to max (typically 16) or 0
 	if (g_caps.anisotropic_filtering) {
 		g_max_aniso = 0.0f;
-		GLenum GL_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FE;
+		//GLenum GL_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FE;
 		if ((g_flags & TFX_RESET_MAX_ANISOTROPY) == TFX_RESET_MAX_ANISOTROPY) {
-			GLenum GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FF;
+			//GLenum GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FF;
 			CHECK(tfx_glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &g_max_aniso));
 		}
 		int nt = sb_count(g_textures);
@@ -1008,7 +1040,7 @@ void tfx_reset(uint16_t width, uint16_t height, tfx_reset_flags flags) {
 		CHECK(tfx_glGetIntegerv(0x9048, &memory));
 		char buf[64];
 		snprintf(buf, 64, "VRAM: %dMiB\n", memory / 1024);
-		OutputDebugString(buf);
+		//OutputDebugString(buf);
 	}
 #endif
 
@@ -1263,7 +1295,7 @@ static GLuint load_shader(GLenum type, const char *shaderSrc) {
 			CHECK(tfx_glGetShaderInfoLog(shader, infoLen, NULL, infoLog));
 			TFX_ERROR("Error compiling shader:\n%s", infoLog);
 #ifdef _MSC_VER
-			OutputDebugString(infoLog);
+			//OutputDebugString(infoLog);
 #endif
 			free(infoLog);
 		}
@@ -1705,7 +1737,7 @@ tfx_texture tfx_texture_new(uint16_t w, uint16_t h, uint16_t layers, void *data,
 		CHECK(tfx_glTexParameteri(mode, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
 		if (aniso) {
-			GLenum GL_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FE;
+			//GLenum GL_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FE;
 			CHECK(tfx_glTexParameterf(mode, GL_TEXTURE_MAX_ANISOTROPY_EXT, g_max_aniso));
 		}
 

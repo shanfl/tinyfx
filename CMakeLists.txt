@@ -1,0 +1,8 @@
+project(tinyfx)
+add_definitions(-DGLEW_STATIC)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/SDL2-2.0.9/include)
+set(tinyfx_src tinyfx.h tinyfx.c glew.c)
+add_library(tinyfx STATIC ${tinyfx_src})
+target_link_libraries(tinyfx opengl32)
+add_subdirectory(examples)

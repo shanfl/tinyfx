@@ -40,10 +40,11 @@ static float to_rad(const float deg) {
 	return deg * (3.14159265358979323846f / 180.0f);
 }
 
-void mat4_projection(float out[16], float fovy, float aspect, float near, float far, bool infinite) {
+void mat4_projection(float *out, float fovy, float aspect, float near1, float far1, bool infinite) 
+{
 	float t = tanf(to_rad(fovy) / 2.0f);
-	float m22 = infinite ? 1.0f : -(far + near) / (far - near);
-	float m23 = infinite ? 2.0f * near : -(2.0f * far * near) / (far - near);
+	float m22 = infinite ? 1.0f : -(far1 + near1) / (far1 - near1);
+	float m23 = infinite ? 2.0f * near1 : -(2.0f * far1 * near1) / (far1 - near1);
 	float m32 = infinite ? -1.0f : -1.0f;
 	for (int i = 0; i < 16; i++) { out[i] = 0.0f; }
 	out[0] = 1.0f / (t * aspect);

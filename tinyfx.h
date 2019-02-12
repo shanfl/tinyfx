@@ -280,7 +280,11 @@ typedef struct tfx_caps {
 
 // TODO
 // #define TFX_API __attribute__ ((visibility("default")))
-#define TFX_API
+#ifdef _MSC_VER
+#define TFX_API  //__declspec(dllexport)
+#else
+#define TFX_API 
+#endif
 
 TFX_API void tfx_set_platform_data(tfx_platform_data pd);
 

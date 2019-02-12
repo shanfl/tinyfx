@@ -1,6 +1,6 @@
-#include <sys/signal.h>
-#include <SDL2/SDL_opengl.h>
-#include <SDL2/SDL.h>
+//#include <sys/signal.h>
+#include <SDL_opengl.h>
+#include <SDL.h>
 #include <assert.h>
 
 #include "demo_util.h"
@@ -74,15 +74,15 @@ void demo_end_frame() {
 }
 
 void sigh(int signo) {
-	if (signo == SIGINT) {
-		g_alive = 0;
-		puts("");
-	}
+	//if (signo == SIGINT) {
+	//	g_alive = 0;
+	//	puts("");
+	//}
 
-	// Make *SURE* that SDL gives input back to the OS.
-	if (signo == SIGSEGV) {
-		SDL_Quit();
-	}
+	//// Make *SURE* that SDL gives input back to the OS.
+	//if (signo == SIGSEGV) {
+	//	SDL_Quit();
+	//}
 }
 
 typedef void (APIENTRY *DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, void* userParam);
@@ -105,14 +105,14 @@ int main(int argc, char **argv) {
 		640, 480,
 		SDL_WINDOW_OPENGL
 	);
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  6);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  0);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,  8);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
 	// So that desktops behave consistently with RPi
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
 	glDebugMessageCallback = (DEBUGMSG)SDL_GL_GetProcAddress("glDebugMessageCallback");
 	if (glDebugMessageCallback) {
 		puts("GL debug enabled");
-		glDebugMessageCallback(&debug_spew, NULL);
+		//glDebugMessageCallback(&debug_spew, NULL);
 	}
 
 	printf("Display resolution: %dx%d\n", g_width, g_height);
@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
 	SDL_SetRelativeMouseMode(1);
 	SDL_GL_SetSwapInterval(1);
 
-	assert(signal(SIGINT, sigh) != SIG_ERR);
+	//assert(signal(SIGINT, sigh) != SIG_ERR);
 
 	tfx_platform_data pd;
 	pd.use_gles = true;
