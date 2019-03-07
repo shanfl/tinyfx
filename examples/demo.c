@@ -1,11 +1,13 @@
 //#include <sys/signal.h>
+
 #include <SDL_opengl.h>
 #include <SDL.h>
 #include <assert.h>
-
+#include <stdlib.h>
 #include "demo_util.h"
 #include "01-triangle.c"
 #include "02-sky.c"
+
 
 struct demo_def {
 	void (*init)(uint16_t, uint16_t);
@@ -105,6 +107,8 @@ int main(int argc, char **argv) {
 		640, 480,
 		SDL_WINDOW_OPENGL
 	);
+
+	//glewInit();
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   8);
@@ -133,7 +137,7 @@ int main(int argc, char **argv) {
 
 	printf("Display resolution: %dx%d\n", g_width, g_height);
 
-	SDL_SetRelativeMouseMode(1);
+	//SDL_SetRelativeMouseMode(1);
 	SDL_GL_SetSwapInterval(1);
 
 	//assert(signal(SIGINT, sigh) != SIG_ERR);

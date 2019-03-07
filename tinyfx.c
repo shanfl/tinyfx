@@ -4,6 +4,7 @@
 #define TFX_DEBUG
 #endif
 #include "tinyfx.h"
+#include <stdlib.h>
 
 #ifdef TFX_LEAK_CHECK
 #define STB_LEAKCHECK_IMPLEMENTATION
@@ -1208,6 +1209,7 @@ static char *sappend(const char *left, const char *right) {
 	size_t ls = strlen(left);
 	size_t rs = strlen(right);
 	char *ss = (char*)malloc(ls+rs+1);
+	memset(ss, '\0', ls + rs + 1);
 	memcpy(ss, left, ls);
 	memcpy(ss+ls, right, rs);
 	ss[ls+rs] = '\0';
@@ -1256,6 +1258,7 @@ static char *shader_concat(const char *base, GLenum shader_type) {
 	else if (g_platform_data.context_version < 30) {
 		suffix = "";
 		gl_major = 1;
+		//gl_minor = 1;
 		// GL 2.1 -> GLSL 120
 		if (!g_platform_data.use_gles) {
 			gl_minor = 2;
@@ -1282,6 +1285,12 @@ static GLuint load_shader(GLenum type, const char *shaderSrc) {
 	}
 
 	char *ss = shader_concat(shaderSrc, type);
+	char buff[100];
+	sprintf(buff, "type_%d.txt", type);
+	FILE *pf = fopen(buff, "w");
+	fwrite(ss, strlen(ss), 1, pf);
+	fclose(pf);
+
 	CHECK(tfx_glShaderSource(shader, 1, (const char**)&ss, NULL));
 	CHECK(tfx_glCompileShader(shader));
 
